@@ -1,6 +1,12 @@
 <template>
   <div id="app">
+    <header>
+      user info
+    </header>
     <router-view></router-view>
+    <footer>
+      copy
+    </footer>
   </div>
 </template>
 

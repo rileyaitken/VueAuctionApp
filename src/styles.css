@@ -1,0 +1,21 @@
+.navigation ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+}
+
+.navigation li {
+    display: block;
+    width: 150px;
+    height: 40px;
+    background-color: antiquewhite;
+    color: white;
+}
+
+.navigation .dropbtn {
+    background-color: antiquewhite;
+    color: white;
+    width: 150px;
+    height: 40px;
+    cursor: pointer;
+}
