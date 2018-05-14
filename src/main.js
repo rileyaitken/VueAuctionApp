@@ -32,12 +32,15 @@ new Vue({
   data: {
     q: "",
     categories: [],
-    currentCategory: ""
+    currentCategory: "",
+      auctions: [],
+      auctionMainPhotos: []
   },
 
   mounted: function() {
     this.getCategories();
-    //this.getAuctions();
+    this.getCurrentCategory();
+    this.getAuctions();
   },
 
   methods: {
@@ -47,22 +50,58 @@ new Vue({
           .then(function(response) {
             console.log(response);
             for (let i = 0; i < response.data.length; i++) {
-              this.categories.push(response.data[i].categoryTitle);
+              this.categories.push(response.data[i]);
             }
           }, function (error) {
             console.log(error);
           });
         console.log(this.categories);
-    }
+    },
 
-    //getAuctions: function() {
-        //let queryParams = "";
-        //if (this.q !== "Title") {
-          //queryParams += this.q;
-        //}
-        //if (this.cate)
-       // this.$http.get()
-    //}
+    getAuctions: function() {
+        this.getCurrentCategory();
+        let queryParams = "";
+        if (this.q !== "Title") {
+          queryParams += "?q=" + this.q;
+          if (this.currentCategory != 'Any') {
+              for (let i = 0; i < this.categories.length; i++) {
+                  if (this.categories[i].categoryTitle === this.currentCategory) {
+                      let categoryId = this.categories[i].categoryId;
+                  }
+              }
+              queryParams += "&category-id=" + categoryId.toString();
+          }
+        } else {
+            if (this.currentCategory != 'Any') {
+                for (let i = 0; i < this.categories.length; i++) {
+                    if (this.categories[i].categoryTitle === this.currentCategory) {
+                        let categoryId = this.categories[i].categoryId;
+                    }
+                }
+                queryParams += "?category-id=" + categoryId.toString();
+            }
+        }
+        this.$http.get("http://localhost:4941/api/v1/auctions" + queryParams)
+            .then(function (response) {
+                this.auctions = response.data;
+                console.log(auctions);
+                for (var i = 0; i < response.data.length; i++) {
+                    this.$http.get("http://localhost:4941/api/v1/auctions/" + response.data[i].auctionId + "/photos")
+                        .then(function (photo_responses) {
+                            this.auctionMainPhotos.push(photo_responses.data[i]);
+                        }, function (error) {
+                            console.log(error);
+                        });
+                }
+            }, function (error) {
+                console.log(error);
+            });
+    },
+
+      getCurrentCategory: function() {
+          var categoriesEl = document.getElementById("categoriesList");
+          this.currentCategory = categoriesEl.options[categoriesEl.selectedIndex].text;
+      },
   },
 
   render: h => h(App)
